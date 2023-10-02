@@ -7,4 +7,9 @@
         SELECT * FROM member WHERE login_id = #{loginId}
     </select>
     
+    <!-- 회원가입 -->
+    <insert id="insertMember" parameterType="com.demo.dto.member.MemberDTO">
+    	INSERT INTO member(login_id, password) VALUES (#{loginId}, #{password})
+    </insert>
+    
 </mapper>

@@ -20,6 +20,18 @@ public class MemberService {
     public MemberDTO findByLoginId(String loginId) {
         return memberMapper.findByLoginId(loginId);
     }
+    
+    public void insertMember(MemberDTO memberDTO) {
+    	memberMapper.insertMember(memberDTO);
+    }
+    
+    // 존재하면 true 반환, 그렇지 않으면 false를 반환
+    public boolean existMember(String loginId) {
+    	// 데이터베이스에 존재하는 로그인 아이디 확인하여 변수에 담음
+        MemberDTO existMember = memberMapper.findByLoginId(loginId);
+        // 동일한 아이디가 데이터베이스에 존재하는 경우(true)
+        return existMember != null;
+    }
 }
 
 

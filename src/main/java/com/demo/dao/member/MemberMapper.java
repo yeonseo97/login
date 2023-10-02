@@ -8,4 +8,7 @@ import com.demo.dto.member.MemberDTO;
 public interface MemberMapper {
 	// 로그인 아이디로 회원 찾기
 	MemberDTO findByLoginId(String loginId);
+	
+	// 회원가입
+	void insertMember(MemberDTO memberDTO);
 }

@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import com.demo.dao.member.MemberMapper;
 import com.demo.dto.member.MemberDTO;
 
+import lombok.extern.log4j.Log4j2;
+
 // 로그인 정보를 데이터베이스에서 가져오기 위해 MyBatis 매퍼를 사용
+@Log4j2
 @Service
 public class MemberService {
 
@@ -20,6 +23,29 @@ public class MemberService {
     public MemberDTO findByLoginId(String loginId) {
         return memberMapper.findByLoginId(loginId);
     }
+    
+//    public MemberDTO findByLoginId(String loginId) {
+//        MemberDTO member = memberMapper.findByLoginId(loginId);
+//        return member;
+//    }
+    
+//    public MemberDTO findByLoginId(String loginId) {
+//        // findByLoginId 메소드를 정의하여 회원 정보와 salt를 함께 조회
+//        MemberDTO member = memberMapper.findByLoginId(loginId);
+//        
+//        if (member != null) {
+//            // 회원 정보를 MemberDTO로 변환
+//            MemberDTO memberDTO = new MemberDTO();
+//            memberDTO.setLoginId(member.getLoginId());
+//            memberDTO.setPassword(member.getPassword());
+//            memberDTO.setSalt(member.getSalt());
+//            log.info("서비스에서 조회되는 salt 값 : {}", member.getSalt());
+//            
+//            return memberDTO;
+//        } else {
+//            return null;
+//        }
+//    }
     
     public void insertMember(MemberDTO memberDTO) {
     	memberMapper.insertMember(memberDTO);

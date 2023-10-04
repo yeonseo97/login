@@ -38,7 +38,7 @@
                     <button type="submit" class="btn login-btn">로그인</button>
                     <button type="button" class="btn signup-btn" onclick="window.location.href='/signup'">회원가입</button>
                 </div>
-            </form>   
+            </form>
         </div>
     </div>
 </body>

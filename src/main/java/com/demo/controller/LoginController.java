@@ -44,19 +44,26 @@ public class LoginController {
     		@RequestParam String password, 
     		HttpSession session,
     		RedirectAttributes attributes) {
-        MemberDTO member = memberService.findByLoginId(loginId);
-        // 사용자가 입력한 비밀번호를 해싱하여 저장된 해시와 비교
-        String hashedPassword = PasswordEncoderUtil.hashPassword(password);
-        log.info("아이디: {}", loginId);
-        log.info("세션: {}", session);
-        if (member != null && member.getPassword().equals(hashedPassword)) {
-            session.setAttribute("member", member);
-            return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
-        } else {
-            attributes.addFlashAttribute("error", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return "redirect:/login"; // 로그인 실패 시 다시 로그인 페이지로 이동
-        }
-     
+        MemberDTO memberDTO = memberService.findByLoginId(loginId);
+    	log.info("loginId : {}", loginId);
+        if (memberDTO != null) {
+            // 사용자의 솔트 값을 가져옴
+            String salt = memberDTO.getSalt();
+            log.info("가져온 솔트 값: {}", salt);
+            // 사용자가 입력한 비밀번호를 해싱하여 저장된 해시와 비교
+            String hashedPassword = PasswordEncoderUtil.hashPassword(password, salt);
+            log.info("아이디: {}", loginId);
+            log.info("세션: {}", session);
+            log.info("사용자 입력한 비밀번호 해시: {}", hashedPassword);
+            log.info("데이터베이스에 저장된 비밀번호 해시: {}", memberDTO.getPassword());
+            
+            if (memberDTO.getPassword().equals(hashedPassword)) {
+                session.setAttribute("member", memberDTO);
+                return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
+            }
+        } 
+        attributes.addFlashAttribute("error", "아이디 또는 비밀번호가 일치하지 않습니다.");
+        return "redirect:/login"; // 로그인 실패 시 다시 로그인 페이지로 이동
     }
 	
     @GetMapping("/logout")
@@ -111,9 +118,14 @@ public class LoginController {
             @ModelAttribute("member") MemberDTO member) {
 		// 중복되는 아이디 확인
 		if(memberService.existMember(member.getLoginId()) == false) {
+			// 솔트 생성
+	        String salt = PasswordEncoderUtil.generateRandomSalt();
+	        log.info("생성된 솔트 값: {}", salt);
 			// 비밀번호 암호화
-	        String hashedPassword = PasswordEncoderUtil.hashPassword(member.getPassword());
+	        String hashedPassword = PasswordEncoderUtil.hashPassword(member.getPassword(), salt);
+	        // 해시된 비밀번호와 솔트 저장
 	        member.setPassword(hashedPassword);
+	        member.setSalt(salt);
 	        
 	        log.info("hashedPassword : {}", hashedPassword);
 			// 처리 

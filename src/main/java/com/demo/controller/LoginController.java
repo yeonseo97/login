@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,12 +24,11 @@ public class LoginController {
 	
 	private final MemberService memberService;
 	
-    //private final PasswordEncoderUtil passwordEncoder;
+    // private final PasswordEncoderUtil passwordEncoder;
     
     @Autowired
     public LoginController(MemberService memberService) {
         this.memberService = memberService;
-        //this.passwordEncoder = passwordEncoder;
     }
     
     // 1. 로그인 / 로그아웃
@@ -45,9 +45,11 @@ public class LoginController {
     		HttpSession session,
     		RedirectAttributes attributes) {
         MemberDTO member = memberService.findByLoginId(loginId);
+        // 사용자가 입력한 비밀번호를 해싱하여 저장된 해시와 비교
+        String hashedPassword = PasswordEncoderUtil.hashPassword(password);
         log.info("아이디: {}", loginId);
         log.info("세션: {}", session);
-        if (member != null && member.getPassword().equals(password)) {
+        if (member != null && member.getPassword().equals(hashedPassword)) {
             session.setAttribute("member", member);
             return "redirect:/"; // 로그인 성공 시 메인 페이지로 이동
         } else {
@@ -105,14 +107,15 @@ public class LoginController {
 	
 	@PostMapping("/signup")
 	public String singupProcess(
-			@RequestParam String loginId,
-            @RequestParam String password,
             RedirectAttributes attributes,
-            MemberDTO member) {
+            @ModelAttribute("member") MemberDTO member) {
 		// 중복되는 아이디 확인
 		if(memberService.existMember(member.getLoginId()) == false) {
 			// 비밀번호 암호화
-			
+	        String hashedPassword = PasswordEncoderUtil.hashPassword(member.getPassword());
+	        member.setPassword(hashedPassword);
+	        
+	        log.info("hashedPassword : {}", hashedPassword);
 			// 처리 
 			memberService.insertMember(member);
 			log.info("가입 아이디 : {}", member.getLoginId());

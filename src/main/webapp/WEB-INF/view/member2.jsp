@@ -11,6 +11,7 @@
 <div class="">
 	<a href="/" class="px-3 pt-1">회원전용1로 가기</a>
     <a href="/logout" class="px-3 pt-1">로그아웃</a>
+    
 </div>
 </body>
 </html>

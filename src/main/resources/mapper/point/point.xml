@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.point.ICoordDao">
+
+    <!-- 데이터 삽입용 테이블 -->
+    <insert id="insertCoord" parameterType="com.demo.dto.point.CoordDto">
+        INSERT INTO 
+         public.coord (id, date, time, car_num, lon, lat, rpm, noise, geom, is_done)
+        VALUES
+         (nextval('seq_id'), 
+         #{coord.date},
+         #{coord.time},
+         #{coord.car_num},
+         #{coord.lon}, 
+         #{coord.lat},
+         #{coord.rpm},
+         #{coord.noise},
+         ST_SetSRID(ST_MakePoint(#{coord.lon},#{coord.lat}), 4326),
+         #{coord.is_done})
+    </insert>
+    
+    <!-- 테이블 데이터 추출 -->
+    <select id="find114carByGpsTable" resultType="com.demo.dto.point.GpsDto">
+        SELECT * FROM gps_114
+    </select>
+    
+    <select id="find114carByNoiseTable" resultType="com.demo.dto.point.NoiseDto">
+        SELECT * FROM noise_114
+    </select>
+
+    <select id="find114carByRpmTable" resultType="com.demo.dto.point.RpmDto">
+        SELECT * FROM rpm_114
+    </select>
+
+    <select id="find103carByGpsTable" resultType="com.demo.dto.point.GpsDto">
+        SELECT * FROM gps_103
+    </select>
+
+    <select id="find103carByNoiseTable" resultType="com.demo.dto.point.NoiseDto">
+        SELECT * FROM noise_103
+    </select>
+
+    <select id="find103carByRpmTable" resultType="com.demo.dto.point.RpmDto">
+        SELECT * FROM rpm_103
+    </select>
+</mapper>

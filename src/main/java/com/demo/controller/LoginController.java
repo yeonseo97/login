@@ -3,33 +3,26 @@ package com.demo.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.demo.dto.member.MemberDTO;
+import com.demo.dto.member.MemberDto;
 import com.demo.service.member.MemberService;
 import com.demo.util.PasswordEncoderUtil;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@RequiredArgsConstructor // 생성자 만들어줌 
 @Controller
 public class LoginController {
 	
 	private final MemberService memberService;
-	
-    // private final PasswordEncoderUtil passwordEncoder;
-    
-    @Autowired
-    public LoginController(MemberService memberService) {
-        this.memberService = memberService;
-    }
     
     // 1. 로그인 / 로그아웃
 	@GetMapping("/login")
@@ -44,7 +37,7 @@ public class LoginController {
     		@RequestParam String password, 
     		HttpSession session,
     		RedirectAttributes attributes) {
-        MemberDTO memberDTO = memberService.findByLoginId(loginId);
+        MemberDto memberDTO = memberService.findByLoginId(loginId);
     	log.info("loginId : {}", loginId);
         if (memberDTO != null) {
             // 사용자의 솔트 값을 가져옴
@@ -77,7 +70,7 @@ public class LoginController {
 	public String memberPage(HttpServletRequest request) {
 		// 세션에서 사용자 정보 가져오기
 		HttpSession session = request.getSession();
-		MemberDTO member = (MemberDTO) session.getAttribute("member");
+		MemberDto member = (MemberDto) session.getAttribute("member");
 
         // 사용자가 로그인되어 있지 않으면 로그인 페이지로 리다이렉트
         if (member == null) {
@@ -93,7 +86,7 @@ public class LoginController {
 	public String memberPage2(HttpServletRequest request) {
 		// 세션에서 사용자 정보 가져오기
 		HttpSession session = request.getSession();
-		MemberDTO member = (MemberDTO) session.getAttribute("member");
+		MemberDto member = (MemberDto) session.getAttribute("member");
 
         // 사용자가 로그인되어 있지 않으면 로그인 페이지로 리다이렉트
         if (member == null) {
@@ -115,7 +108,8 @@ public class LoginController {
 	@PostMapping("/signup")
 	public String singupProcess(
             RedirectAttributes attributes,
-            @ModelAttribute("member") MemberDTO member) {
+            // @ModelAttribute("member")를 사용하면 코드를 줄일 수 있음(@RequestParam대신 사용)
+            @ModelAttribute("member") MemberDto member) {
 		// 중복되는 아이디 확인
 		if(memberService.existMember(member.getLoginId()) == false) {
 			// 솔트 생성
